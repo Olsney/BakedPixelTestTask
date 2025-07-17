@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-
-namespace Code.Infrastructure.Factory.AssetManagement
+﻿namespace Code.Infrastructure.Factory.AssetManagement
 {
-    public class AssetProvider : IAssetProvider
+    public static class AssetPath
     {
-        public GameObject Load(string path) => 
-            Resources.Load<GameObject>(path);
+        public const string UIRootPath = "UI/UIRoot";
     }
 }
