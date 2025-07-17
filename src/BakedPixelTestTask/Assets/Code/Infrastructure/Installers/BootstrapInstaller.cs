@@ -1,7 +1,9 @@
+using Code.Infrastructure.Factory.AssetManagement;
 using Code.Infrastructure.Factory.Game;
 using Code.Infrastructure.Factory.State;
 using Code.Infrastructure.States;
 using Code.Services.Inputs;
+using Code.UI.Services.Factory;
 using UnityEngine;
 using Zenject;
 
@@ -25,6 +27,7 @@ namespace Code.Infrastructure.Installers
         {
             Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
             Container.Bind<IStateFactory>().To<StateFactory>().AsSingle();
+            Container.Bind<IUIFactory>().To<UIFactory>().AsSingle();
         }
 
         private void BindStates()
@@ -39,6 +42,7 @@ namespace Code.Infrastructure.Installers
         private void BindServices()
         {
             BindInputService();
+            Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle();
         }
         
         private void BindInputService()
