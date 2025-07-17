@@ -5,6 +5,7 @@ using Code.Infrastructure.States;
 using Code.Services.Inputs;
 using Code.Services.PersistentProgress;
 using Code.Services.SaveLoad;
+using Code.Services.StaticData;
 using Code.UI.Services.Factory;
 using UnityEngine;
 using Zenject;
@@ -30,6 +31,7 @@ namespace Code.Infrastructure.Installers
             Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
             Container.Bind<IStateFactory>().To<StateFactory>().AsSingle();
             Container.Bind<IUIFactory>().To<UIFactory>().AsSingle();
+            Container.Bind<IStaticDataService>().To<StaticDataService>().AsSingle();
         }
 
         private void BindStates()
