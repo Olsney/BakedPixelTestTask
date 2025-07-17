@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2732c5abec4e178c47aecb2cac0370, type: 3}
   m_Name: BodyArmor
   m_EditorClassIdentifier: 
-  Id: 
+  Id: body_armor
   DisplayName: Body Armor
   Icon: {fileID: 21300000, guid: 1c55902f0dfafb34f8ffcb99f0f8f54f, type: 3}
   Type: 301

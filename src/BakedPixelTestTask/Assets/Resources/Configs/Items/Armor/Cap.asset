@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2732c5abec4e178c47aecb2cac0370, type: 3}
   m_Name: Cap
   m_EditorClassIdentifier: 
-  Id: 
+  Id: cap
   DisplayName: Cap
   Icon: {fileID: 21300000, guid: e8fc8fedcd8b918408658e452eff8440, type: 3}
   Type: 400
