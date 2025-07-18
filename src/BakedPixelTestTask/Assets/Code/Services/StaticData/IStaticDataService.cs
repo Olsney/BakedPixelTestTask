@@ -5,8 +5,10 @@ namespace Code.Services.StaticData
 {
     public interface IStaticDataService
     {
-        void LoadItems();
-        ItemConfig ForItem(string id);
+        void LoadAllItems();
+        ItemConfig GetItemConfig(string id);
         IReadOnlyList<ItemConfig> AllItems { get; }
+        void LoadAllInventoryConfigs();
+        InventoryConfig GetInventoryConfig(InventoryId id);
     }
 }

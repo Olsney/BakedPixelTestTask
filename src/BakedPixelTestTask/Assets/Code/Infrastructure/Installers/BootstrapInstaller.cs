@@ -1,3 +1,4 @@
+using Code.Gameplay.Inventory;
 using Code.Infrastructure.Factory.AssetManagement;
 using Code.Infrastructure.Factory.Game;
 using Code.Infrastructure.Factory.State;
@@ -20,12 +21,13 @@ namespace Code.Infrastructure.Installers
             BindFactories();
             BindStates();
             BindServices();
+            BindModels();
             BindSceneLoader();
         }
-        
+
         private void BindCoroutine() => 
             Container.Bind<ICoroutineRunner>().FromInstance(this).AsSingle();
-        
+
         private void BindFactories()
         {
             Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
@@ -42,7 +44,7 @@ namespace Code.Infrastructure.Installers
             Container.Bind<LoadProgressState>().AsSingle();
             Container.Bind<GameLoopState>().AsSingle();
         }
-        
+
         private void BindServices()
         {
             BindInputService();
@@ -50,7 +52,12 @@ namespace Code.Infrastructure.Installers
             Container.Bind<IPersistentProgressService>().To<PersistentProgressService>().AsSingle();
             Container.Bind<ISaveLoadService>().To<SaveLoadService>().AsSingle();
         }
-        
+
+        private void BindModels()
+        {
+            Container.BindInterfacesAndSelfTo<InventoryModel>().AsSingle();
+        }
+
         private void BindInputService()
         {
             if (Application.isEditor)
@@ -58,7 +65,7 @@ namespace Code.Infrastructure.Installers
             else
                 Container.Bind<IInputService>().To<MobileInputService>().AsSingle();
         }
-        
+
         private void BindSceneLoader() => 
             Container.Bind<SceneLoader>().AsSingle();
     }

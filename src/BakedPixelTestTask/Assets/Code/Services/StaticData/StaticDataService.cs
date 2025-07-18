@@ -10,21 +10,37 @@ namespace Code.Services.StaticData
         private const string ItemsPath = "Configs/Items";
         
         private Dictionary<string, ItemConfig> _items;
+        private Dictionary<InventoryId, InventoryConfig> _inventoryConfigs;
+
 
         public IReadOnlyList<ItemConfig> AllItems => _items.Values.ToList();
 
-        public void LoadItems()
+        public void LoadAllItems()
         {
             _items = Resources
                 .LoadAll<ItemConfig>(ItemsPath)
                 .ToDictionary(x => x.Id, x => x);
         }
 
-        public ItemConfig ForItem(string id)
+        public ItemConfig GetItemConfig(string id)
         {
             return _items.TryGetValue(id, out var config)
                 ? config
                 : null;
+        }
+
+        public void LoadAllInventoryConfigs()
+        {
+            _inventoryConfigs = Resources
+                .LoadAll<InventoryConfig>("Configs/Inventories")
+                .ToDictionary(x => x.Id, x => x);
+        }
+
+        public InventoryConfig GetInventoryConfig(InventoryId id)
+        {
+            return _inventoryConfigs.TryGetValue(id, out var config) 
+                ? config 
+                : throw new KeyNotFoundException($"No InventoryConfig for id {id}");        
         }
     }
 }

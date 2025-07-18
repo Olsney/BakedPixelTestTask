@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Code.Infrastructure.Factory.AssetManagement;
 using Code.Services.PersistentProgress;
+using Code.UI.Services.Factory;
+using Code.UI.View;
 using UnityEngine;
 using Zenject;
 
@@ -10,22 +12,29 @@ namespace Code.Infrastructure.Factory.Game
     {
         private readonly IInstantiator _container;
         private readonly IAssetProvider _assets;
-        
+        private readonly IUIFactory _uiFactory;
+
         public List<ISavedProgress> ProgressWriters { get; } = new List<ISavedProgress>();
 
         public List<ISavedProgressReader> ProgressReaders { get; } = new List<ISavedProgressReader>();
 
         public GameFactory(IInstantiator container, 
             IAssetProvider assets,
-            IPersistentProgressService progressService)
+            IPersistentProgressService progressService,
+            IUIFactory uiFactory)
         {
             _container = container;
             _assets = assets;
+            _uiFactory = uiFactory;
         }
 
         public GameObject CreateHud()
         {
             GameObject hud = InstantiateRegistered(AssetPath.HudPath);
+            
+            HudView hudView = hud.GetComponent<HudView>();
+            
+            _uiFactory.CreatePresenters(hudView);
             
             return hud;
         }

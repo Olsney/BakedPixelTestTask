@@ -1,24 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using Code.Gameplay.Items;
+using Code.Services.StaticData;
 using Code.StaticData.Item;
 
 namespace Code.Gameplay.Inventory
 {
     public class InventoryModel
     {
-        private readonly List<SlotModel> _slots;
+        private readonly IStaticDataService _staticData;
+        private List<SlotModel> _slots;
 
         public IReadOnlyList<SlotModel> Slots => new List<SlotModel>(_slots);
         public int Capacity => _slots.Count;
 
         public event Action OnInventoryChanged;
 
-        public InventoryModel(int initialSlotCount)
+        // public InventoryModel(int initialSlotCount)
+        // {
+        //     _slots = new List<SlotModel>(initialSlotCount);
+        //     
+        //     for (int i = 0; i < initialSlotCount; i++)
+        //         _slots.Add(new SlotModel());
+        // }
+        
+        public InventoryModel(IStaticDataService staticData)
         {
-            _slots = new List<SlotModel>(initialSlotCount);
+            _staticData = staticData;
+        }
+
+        public void Initialize()
+        {
+            InventoryConfig inventoryConfig = _staticData.GetInventoryConfig(InventoryId.Player);
+
+            _slots = new List<SlotModel>(inventoryConfig.Capacity);
             
-            for (int i = 0; i < initialSlotCount; i++)
+            for (int i = 0; i < inventoryConfig.Capacity; i++)
                 _slots.Add(new SlotModel());
         }
         
@@ -42,10 +59,12 @@ namespace Code.Gameplay.Inventory
                 for (int i = 0; i < _slots.Count; i++)
                 {
                     SlotModel slot = _slots[i];
+                    
                     if (slot.CanStack(config))
                     {
                         slot.TryStack(config, count);
                         OnInventoryChanged?.Invoke();
+                        
                         return true;
                     }
                 }
@@ -58,6 +77,7 @@ namespace Code.Gameplay.Inventory
                 {
                     slot.SetItem(new ItemModel(config, count));
                     OnInventoryChanged?.Invoke();
+                    
                     return true;
                 }
             }
@@ -71,11 +91,13 @@ namespace Code.Gameplay.Inventory
                 return false;
 
             SlotModel slot = _slots[slotIndex];
+            
             if (slot.IsEmpty)
                 return false;
 
             slot.Clear();
             OnInventoryChanged?.Invoke();
+            
             return true;
         }
 
@@ -90,6 +112,7 @@ namespace Code.Gameplay.Inventory
         public List<int> FindAllOccupiedSlotIndexes()
         {
             List<int> result = new List<int>();
+            
             for (int i = 0; i < _slots.Count; i++)
             {
                 if (!_slots[i].IsEmpty)
