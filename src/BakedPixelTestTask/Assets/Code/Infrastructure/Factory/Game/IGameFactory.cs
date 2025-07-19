@@ -10,5 +10,6 @@ namespace Code.Infrastructure.Factory.Game
         List<ISavedProgressReader> ProgressReaders { get; }
         GameObject CreateHud();
         void Cleanup();
+        void CreateAutoSaver();
     }
 }

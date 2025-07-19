@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: cap
   DisplayName: Cap
-  Icon: {fileID: 21300000, guid: e8fc8fedcd8b918408658e452eff8440, type: 3}
+  Icon: {fileID: 21300000, guid: a8cd47beb3b1759498516de247d5ed4d, type: 3}
   Type: 400
   Category: 300
   Weight: 0.2

@@ -33,6 +33,7 @@ namespace Code.Infrastructure.States
         public void Enter(string sceneName)
         {
             _gameFactory.Cleanup();
+            _gameFactory.CreateAutoSaver();
             _sceneLoader.Load(EmptySceneName, () => _sceneLoader.Load(sceneName, OnLoaded));
         }
 

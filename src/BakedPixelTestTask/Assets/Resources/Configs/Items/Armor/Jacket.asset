@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: jacket
   DisplayName: Jacket
-  Icon: {fileID: 21300000, guid: 8b4269cd8584f584e8de8884eeab6266, type: 3}
+  Icon: {fileID: 21300000, guid: 77b50edc607fd8a4bad87d0f3a16c17c, type: 3}
   Type: 300
   Category: 300
   Weight: 1

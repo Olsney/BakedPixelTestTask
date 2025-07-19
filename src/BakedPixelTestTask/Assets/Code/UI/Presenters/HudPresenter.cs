@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 
 namespace Code.UI.Presenters
 {
-    public class HudPresenter
+    public class HudPresenter : Presenter<HudView>
     {
         private readonly InventoryModel _inventory;
         private readonly IPersistentProgressService _progress;
@@ -29,7 +29,7 @@ namespace Code.UI.Presenters
         public HudPresenter(InventoryModel inventory,
             IPersistentProgressService progress,
             IStaticDataService staticData,
-            HudView view)
+            HudView view) : base(view)
         {
             _inventory = inventory;
             _progress = progress;
@@ -221,6 +221,11 @@ namespace Code.UI.Presenters
         {
             if (_view.WeightText != null)
                 _view.WeightText.text = _inventory.GetTotalWeight().ToString();
+        }
+        public override void Dispose()
+        {
+            _inventory.InventoryChanged -= UpdateWeight;
+            _progress.Progress.CoinsChanged -= UpdateCoins;
         }
     }
 }
