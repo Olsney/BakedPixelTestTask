@@ -119,6 +119,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InventoryView>k__BackingField: {fileID: 7665382267594637960}
+  <FireButton>k__BackingField: {fileID: 666528154376158329}
+  <AddAmmoButton>k__BackingField: {fileID: 5457155898188732808}
+  <AddItemButton>k__BackingField: {fileID: 828532024219781622}
+  <DeleteItemButton>k__BackingField: {fileID: 6200587089752739847}
+  <AddCoinsButton>k__BackingField: {fileID: 933132868856757447}
 --- !u!1 &107327155364387728
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,8 +911,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6050677989356508541}
   m_HandleRect: {fileID: 8360011836155446388}
   m_Direction: 2
-  m_Value: 0.99618113
-  m_Size: 0.6354084
+  m_Value: 0.9895257
+  m_Size: 0.63540846
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1889,7 +1894,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1.021883}
+  m_AnchoredPosition: {x: 0, y: 2.803011}
   m_SizeDelta: {x: 0, y: 734}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3059533937068378658

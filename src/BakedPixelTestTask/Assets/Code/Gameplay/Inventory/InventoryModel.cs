@@ -9,21 +9,39 @@ namespace Code.Gameplay.Inventory
     public class InventoryModel
     {
         private readonly IStaticDataService _staticData;
-        private List<SlotModel> _slots;
 
-        public IReadOnlyList<SlotModel> Slots => new List<SlotModel>(_slots);
+        private List<SlotModel> _slots;
+        private int _unlockPrice;
+
+
+        public List<SlotModel> Slots => new List<SlotModel>(_slots);
         public int Capacity => _slots.Count;
 
         public event Action OnInventoryChanged;
-
-        // public InventoryModel(int initialSlotCount)
-        // {
-        //     _slots = new List<SlotModel>(initialSlotCount);
-        //     
-        //     for (int i = 0; i < initialSlotCount; i++)
-        //         _slots.Add(new SlotModel());
-        // }
         
+        public int UnlockSlotPrice => _unlockPrice;
+        public int UnlockedSlotsCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (var slot in _slots)
+                    if (!slot.IsLocked)
+                        count++;
+                return count;
+            }
+        }
+        public bool HasLockedSlots
+        {
+            get
+            {
+                foreach (var slot in _slots)
+                    if (slot.IsLocked)
+                        return true;
+                return false;
+            }
+        }
+
         public InventoryModel(IStaticDataService staticData)
         {
             _staticData = staticData;
@@ -33,56 +51,82 @@ namespace Code.Gameplay.Inventory
         {
             InventoryConfig inventoryConfig = _staticData.GetInventoryConfig(InventoryId.Player);
 
+            _unlockPrice = inventoryConfig.UnlockSlotPrice;
+
             _slots = new List<SlotModel>(inventoryConfig.Capacity);
-            
+
             for (int i = 0; i < inventoryConfig.Capacity; i++)
-                _slots.Add(new SlotModel());
+            {
+                bool locked = i >= inventoryConfig.DefaultUnlockedSlots;
+                _slots.Add(new SlotModel(locked));
+            }
         }
-        
+
         public float GetTotalWeight()
         {
             float total = 0f;
-                
+
             for (int i = 0; i < _slots.Count; i++)
             {
                 if (!_slots[i].IsEmpty)
                     total += _slots[i].Item.TotalWeight;
             }
-                
+
             return total;
         }
 
         public bool TryAddItem(ItemConfig config, int count = 1)
         {
+            return TryAddItem(config, count, out _);
+        }
+
+        public bool TryAddItem(ItemConfig config, int count, out List<int> affectedSlots)
+        {
+            affectedSlots = new List<int>();
+            
             if (config.MaxStack > 1)
             {
-                for (int i = 0; i < _slots.Count; i++)
+                for (int i = 0; i < _slots.Count && count > 0; i++)
                 {
                     SlotModel slot = _slots[i];
                     
+                    
+                    if (slot.IsLocked)
+                        continue;
+
                     if (slot.CanStack(config))
                     {
-                        slot.TryStack(config, count);
-                        OnInventoryChanged?.Invoke();
+                        int add = Math.Min(count, config.MaxStack - slot.Item.Count);
+                        slot.TryStack(config, add);
+                        count -= add;
                         
-                        return true;
+                        affectedSlots.Add(i);
                     }
                 }
             }
 
-            for (int i = 0; i < _slots.Count; i++)
+            for (int i = 0; i < _slots.Count && count > 0; i++)
             {
                 SlotModel slot = _slots[i];
+                
+                if (slot.IsLocked)
+                    continue;
+                
                 if (slot.IsEmpty)
                 {
-                    slot.SetItem(new ItemModel(config, count));
-                    OnInventoryChanged?.Invoke();
+                    int add = Math.Min(count, config.MaxStack);
                     
-                    return true;
+                    slot.SetItem(new ItemModel(config, add));
+                    
+                    count -= add;
+                    affectedSlots.Add(i);
                 }
             }
 
-            return false;
+            if (affectedSlots.Count > 0)
+                OnInventoryChanged?.Invoke();
+
+            return count == 0;
         }
 
         public bool RemoveItem(int slotIndex)
@@ -91,13 +135,13 @@ namespace Code.Gameplay.Inventory
                 return false;
 
             SlotModel slot = _slots[slotIndex];
-            
+
             if (slot.IsEmpty)
                 return false;
 
             slot.Clear();
             OnInventoryChanged?.Invoke();
-            
+
             return true;
         }
 
@@ -108,11 +152,26 @@ namespace Code.Gameplay.Inventory
 
             OnInventoryChanged?.Invoke();
         }
+        
+        public bool UnlockNextSlot()
+        {
+            foreach (var slot in _slots)
+            {
+                if (slot.IsLocked)
+                {
+                    slot.Unlock();
+                    OnInventoryChanged?.Invoke();
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public List<int> FindAllOccupiedSlotIndexes()
         {
             List<int> result = new List<int>();
-            
+
             for (int i = 0; i < _slots.Count; i++)
             {
                 if (!_slots[i].IsEmpty)

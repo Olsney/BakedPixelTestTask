@@ -7,14 +7,25 @@ namespace Code.Gameplay.Inventory
     public class SlotModel
     {
         private ItemModel _item;
+        private bool _locked;
+
 
         public ItemModel Item => _item;
         public bool IsEmpty => _item == null;
+        public bool IsLocked => _locked;
 
         public event Action ItemChanged;
+        
+        public SlotModel(bool locked = false)
+        {
+            _locked = locked;
+        }
 
         public void SetItem(ItemModel item)
         {
+            if (_locked)
+                return;
+            
             _item = item;
             
             ItemChanged?.Invoke();
@@ -35,10 +46,21 @@ namespace Code.Gameplay.Inventory
 
         public bool TryStack(ItemConfig config, int count)
         {
-            if (!CanStack(config))
+            if (_locked || !CanStack(config))
                 return false;
 
             _item.Add(count);
+            ItemChanged?.Invoke();
+            
+            return true;
+        }
+        
+        public bool Unlock()
+        {
+            if (!_locked)
+                return false;
+
+            _locked = false;
             ItemChanged?.Invoke();
             
             return true;
