@@ -13,7 +13,7 @@ namespace Code.UI.Presenters
             _model = model;
             _view = view;
 
-            _model.OnInventoryChanged += UpdateView;
+            _model.InventoryChanged += UpdateView;
 
             UpdateView();
         }
@@ -34,7 +34,7 @@ namespace Code.UI.Presenters
 
         public void Dispose()
         {
-            _model.OnInventoryChanged -= UpdateView;
+            _model.InventoryChanged -= UpdateView;
         }
     }
 }

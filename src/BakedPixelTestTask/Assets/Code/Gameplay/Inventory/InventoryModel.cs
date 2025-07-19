@@ -17,7 +17,7 @@ namespace Code.Gameplay.Inventory
         public List<SlotModel> Slots => new List<SlotModel>(_slots);
         public int Capacity => _slots.Count;
 
-        public event Action OnInventoryChanged;
+        public event Action InventoryChanged;
         
         public int UnlockSlotPrice => _unlockPrice;
         public int UnlockedSlotsCount
@@ -58,9 +58,16 @@ namespace Code.Gameplay.Inventory
             for (int i = 0; i < inventoryConfig.Capacity; i++)
             {
                 bool locked = i >= inventoryConfig.DefaultUnlockedSlots;
-                _slots.Add(new SlotModel(locked));
+                var slot = new SlotModel(locked);
+                slot.ItemChanged += OnSlotChanged;
+                _slots.Add(slot);
             }
+
+            InventoryChanged?.Invoke();
         }
+        
+        private void OnSlotChanged() =>
+            InventoryChanged?.Invoke();
 
         public float GetTotalWeight()
         {
@@ -124,7 +131,7 @@ namespace Code.Gameplay.Inventory
             }
 
             if (affectedSlots.Count > 0)
-                OnInventoryChanged?.Invoke();
+                InventoryChanged?.Invoke();
 
             return count == 0;
         }
@@ -140,7 +147,7 @@ namespace Code.Gameplay.Inventory
                 return false;
 
             slot.Clear();
-            OnInventoryChanged?.Invoke();
+            InventoryChanged?.Invoke();
 
             return true;
         }
@@ -148,9 +155,13 @@ namespace Code.Gameplay.Inventory
         public void AddEmptySlots(int count)
         {
             for (int i = 0; i < count; i++)
-                _slots.Add(new SlotModel());
+            {
+                var slot = new SlotModel();
+                slot.ItemChanged += OnSlotChanged;
+                _slots.Add(slot);
+            }
 
-            OnInventoryChanged?.Invoke();
+            InventoryChanged?.Invoke();
         }
         
         public bool UnlockNextSlot()
@@ -160,7 +171,7 @@ namespace Code.Gameplay.Inventory
                 if (slot.IsLocked)
                 {
                     slot.Unlock();
-                    OnInventoryChanged?.Invoke();
+                    InventoryChanged?.Invoke();
                     return true;
                 }
             }

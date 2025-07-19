@@ -166,6 +166,7 @@ namespace Code.UI.Presenters
             if (occupied.Count == 0)
             {
                 Debug.LogError("Inventory empty");
+                
                 return;
             }
 

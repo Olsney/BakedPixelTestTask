@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: pistol_ammo
   DisplayName: Pistol Ammo
   Icon: {fileID: 21300000, guid: 94a6ac7b51efbb34daa774acf82fb19f, type: 3}
-  Type: 101
+  Type: 100
   Category: 100
   Weight: 0.01
   MaxStack: 50

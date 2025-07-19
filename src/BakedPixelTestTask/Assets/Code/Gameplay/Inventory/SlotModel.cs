@@ -26,13 +26,22 @@ namespace Code.Gameplay.Inventory
             if (_locked)
                 return;
             
+            if(_item != null)
+                _item.Changed -= OnItemChanged;
+            
             _item = item;
+            
+            if(_item != null)
+                _item.Changed += OnItemChanged;
             
             ItemChanged?.Invoke();
         }
 
         public void Clear()
         {
+            if (_item != null)
+                _item.Changed -= OnItemChanged;
+            
             _item = null;
             ItemChanged?.Invoke();
         }
@@ -65,5 +74,8 @@ namespace Code.Gameplay.Inventory
             
             return true;
         }
+        
+        private void OnItemChanged() =>
+            ItemChanged?.Invoke();
     }
 }
