@@ -22,7 +22,8 @@ namespace Code
 
         private void OnApplicationQuit()
         {
-            Debug.Log("Progress saved inOnApplicationQuit");
+            Debug.Log("Progress saved in ApplicationQuit");
+            
             _saveLoadService.SaveProgress();
         }
     }
