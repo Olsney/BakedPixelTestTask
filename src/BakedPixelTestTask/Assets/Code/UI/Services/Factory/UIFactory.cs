@@ -57,7 +57,11 @@ namespace Code.UI.Services.Factory
         
         private HudPresenter CreateHudPresenter(HudView hudView)
         {
-            return new HudPresenter(_inventoryModel, _progress, _staticData, hudView);
+            HudPresenter hudPresenter = new HudPresenter(_inventoryModel, _progress, _staticData, hudView);
+            
+            hudPresenter.Initialize();
+
+            return hudPresenter;
         }
     }
 }

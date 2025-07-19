@@ -5,6 +5,8 @@ namespace Code.Data
     [Serializable]
     public class PlayerProgress
     {
+        public event Action<int> CoinsChanged;
+        
         public int Coins { get; private set; }
         
         public void AddCoins(int amount)
@@ -13,6 +15,7 @@ namespace Code.Data
                 throw new ArgumentOutOfRangeException(nameof(amount));
             
             Coins += amount;
+            CoinsChanged?.Invoke(Coins);
         }
         
         public void Pay(int amount)
@@ -21,6 +24,7 @@ namespace Code.Data
                 throw new ArgumentOutOfRangeException(nameof(amount));
             
             Coins -= amount;
+            CoinsChanged?.Invoke(Coins);
         }
     }
 }

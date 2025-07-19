@@ -14,4 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CoinsPerClick: 50
   AmmoPerClick: 30
-  RandomItemIds: []
+  RandomItemIds:
+  - body_armor
+  - cap
+  - helmet
+  - jacket
+  - pistol
+  - rifle

@@ -23,6 +23,8 @@ namespace Code.UI.Presenters
         private readonly List<ItemConfig> _weaponConfigs = new List<ItemConfig>();
         private readonly List<ItemConfig> _armorConfigs = new List<ItemConfig>();
         private readonly GameBalanceConfig _gameBalanceConfig;
+        private readonly Action<int> _coinsChangedHandler;
+        private readonly Action _inventoryChangedHandler;
 
         public HudPresenter(InventoryModel inventory,
             IPersistentProgressService progress,
@@ -51,7 +53,17 @@ namespace Code.UI.Presenters
                 }
             }
 
+        }
+
+        public void Initialize()
+        {
+            _inventory.InventoryChanged += UpdateWeight;
+            _progress.Progress.CoinsChanged += UpdateCoins;
+
             BindButtons();
+
+            UpdateWeight();
+            UpdateCoins(_progress.Progress.Coins);
         }
 
         private void BindButtons()
@@ -145,6 +157,7 @@ namespace Code.UI.Presenters
             if (item == null)
             {
                 Debug.LogError($"No item config with id {id}");
+                
                 return;
             }
             
@@ -195,6 +208,19 @@ namespace Code.UI.Presenters
             _progress.Progress.AddCoins(_gameBalanceConfig.CoinsPerClick);
             
             Debug.Log($"Coins: {_progress.Progress.Coins}");
+        }
+        
+        
+        private void UpdateCoins(int value)
+        {
+            if (_view.CoinsText != null)
+                _view.CoinsText.text = value.ToString();
+        }
+
+        private void UpdateWeight()
+        {
+            if (_view.WeightText != null)
+                _view.WeightText.text = _inventory.GetTotalWeight().ToString();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Code.UI.View
@@ -11,5 +12,7 @@ namespace Code.UI.View
         [field: SerializeField] public Button AddItemButton { get; private set; }
         [field: SerializeField] public Button DeleteItemButton { get; private set; }
         [field: SerializeField] public Button AddCoinsButton { get; private set; }
+        [field: SerializeField] public TMP_Text CoinsText { get; private set; }
+        [field: SerializeField] public TMP_Text WeightText { get; private set; }
     }
 }
