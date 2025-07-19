@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Code.StaticData.GameBalance;
 using Code.StaticData.Item;
 using UnityEngine;
 
@@ -8,9 +9,11 @@ namespace Code.Services.StaticData
     public class StaticDataService : IStaticDataService
     {
         private const string ItemsPath = "Configs/Items";
+        private const string GameConfigPath = "Configs/Game/GameConfig";
         
         private Dictionary<string, ItemConfig> _items;
         private Dictionary<InventoryId, InventoryConfig> _inventoryConfigs;
+        private GameBalanceConfig _gameBalanceConfig;
 
 
         public IReadOnlyList<ItemConfig> AllItems => _items.Values.ToList();
@@ -42,5 +45,11 @@ namespace Code.Services.StaticData
                 ? config 
                 : throw new KeyNotFoundException($"No InventoryConfig for id {id}");        
         }
+
+        public void LoadGameBalanceConfig() => 
+            _gameBalanceConfig = Resources.Load<GameBalanceConfig>(GameConfigPath);
+
+        public GameBalanceConfig GetGameBalanceConfig() =>
+            _gameBalanceConfig;
     }
 }

@@ -22,6 +22,7 @@ namespace Code.Infrastructure.States
         {
             _staticDataService.LoadAllItems();
             _staticDataService.LoadAllInventoryConfigs();
+            _staticDataService.LoadGameBalanceConfig();
             
             if (SceneManager.GetActiveScene().name == Initial)
             {

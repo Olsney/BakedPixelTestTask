@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Code.StaticData.GameBalance;
 using Code.StaticData.Item;
 
 namespace Code.Services.StaticData
@@ -10,5 +11,7 @@ namespace Code.Services.StaticData
         IReadOnlyList<ItemConfig> AllItems { get; }
         void LoadAllInventoryConfigs();
         InventoryConfig GetInventoryConfig(InventoryId id);
+        void LoadGameBalanceConfig();
+        GameBalanceConfig GetGameBalanceConfig();
     }
 }

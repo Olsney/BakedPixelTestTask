@@ -4,6 +4,7 @@ using Code.Data;
 using Code.Gameplay.Inventory;
 using Code.Services.PersistentProgress;
 using Code.Services.StaticData;
+using Code.StaticData.GameBalance;
 using Code.StaticData.Item;
 using Code.UI.View;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace Code.UI.Presenters
         private readonly List<ItemConfig> _ammoConfigs = new List<ItemConfig>();
         private readonly List<ItemConfig> _weaponConfigs = new List<ItemConfig>();
         private readonly List<ItemConfig> _armorConfigs = new List<ItemConfig>();
+        private readonly GameBalanceConfig _gameBalanceConfig;
 
         public HudPresenter(InventoryModel inventory,
             IPersistentProgressService progress,
@@ -31,6 +33,7 @@ namespace Code.UI.Presenters
             _progress = progress;
             _staticData = staticData;
             _view = view;
+            _gameBalanceConfig = _staticData.GetGameBalanceConfig();
 
             foreach (ItemConfig config in _staticData.AllItems)
             {
@@ -115,7 +118,7 @@ namespace Code.UI.Presenters
         {
             foreach (ItemConfig ammo in _ammoConfigs)
             {
-                if (_inventory.TryAddItem(ammo, count: 30, out List<int> slots))
+                if (_inventory.TryAddItem(ammo, count: _gameBalanceConfig.AmmoPerClick, out List<int> slots))
                 {
                     foreach (int index in slots)
                         Debug.Log($"Added {ammo.DisplayName} to slot {index}");
@@ -129,19 +132,28 @@ namespace Code.UI.Presenters
 
         private void AddItem()
         {
-            List<ItemConfig> all = new List<ItemConfig>();
-            all.AddRange(_weaponConfigs);
-            all.AddRange(_armorConfigs);
+            List<ItemConfig> itemsConfigs = new List<ItemConfig>();
+            itemsConfigs.AddRange(_weaponConfigs);
+            itemsConfigs.AddRange(_armorConfigs);
 
-            if (all.Count == 0)
+            if (itemsConfigs.Count == 0)
                 return;
-
-            ItemConfig item = all[Random.Range(0, all.Count)];
+            
+            string id = _gameBalanceConfig.RandomItemIds[Random.Range(0, _gameBalanceConfig.RandomItemIds.Length)];
+            ItemConfig item = _staticData.GetItemConfig(id);
+            
+            if (item == null)
+            {
+                Debug.LogError($"No item config with id {id}");
+                return;
+            }
+            
+            
             if (!_inventory.TryAddItem(item))
             {
                 if (_inventory.HasLockedSlots && _progress.Progress.Coins >= _inventory.UnlockSlotPrice)
                 {
-                    _progress.Progress.Coins -= _inventory.UnlockSlotPrice;
+                    _progress.Progress.Pay(_inventory.UnlockSlotPrice);
                     _inventory.UnlockNextSlot();
 
                     if (_inventory.TryAddItem(item))
@@ -172,13 +184,16 @@ namespace Code.UI.Presenters
 
             int index = occupied[Random.Range(0, occupied.Count)];
             ItemConfig cfg = _inventory.Slots[index].Item.Config;
+            
             _inventory.RemoveItem(index);
+            
             Debug.Log($"Removed {cfg.DisplayName} from slot {index}");
         }
 
         private void AddCoins()
         {
-            _progress.Progress.Coins += 50;
+            _progress.Progress.AddCoins(_gameBalanceConfig.CoinsPerClick);
+            
             Debug.Log($"Coins: {_progress.Progress.Coins}");
         }
     }
