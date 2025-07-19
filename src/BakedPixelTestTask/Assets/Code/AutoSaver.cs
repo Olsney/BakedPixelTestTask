@@ -1,4 +1,6 @@
-﻿using Code.Services.SaveLoad;
+﻿using System;
+using System.IO;
+using Code.Services.SaveLoad;
 using UnityEngine;
 using Zenject;
 
@@ -6,6 +8,7 @@ namespace Code
 {
     public class AutoSaver : MonoBehaviour
     {
+        private const string ProgressFileName = "progress.json";
         private ISaveLoadService _saveLoadService;
 
         [Inject]
@@ -13,7 +16,7 @@ namespace Code
         {
             _saveLoadService = saveLoadService;
         }
-
+        
         private void OnApplicationPause(bool pause)
         {
             if (pause)
