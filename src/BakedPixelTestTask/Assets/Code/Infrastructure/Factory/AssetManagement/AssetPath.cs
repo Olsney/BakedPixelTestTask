@@ -4,5 +4,6 @@
     {
         public const string UIRootPath = "UI/UIRoot";
         public const string HudPath = "Hud/Hud";
+        public const string AutoSaverPath = "AutoSaver";
     }
 }
