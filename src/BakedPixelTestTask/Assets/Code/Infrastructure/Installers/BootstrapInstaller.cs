@@ -1,3 +1,4 @@
+using Code.Gameplay.Inventory;
 using Code.Infrastructure.Factory.AssetManagement;
 using Code.Infrastructure.Factory.Game;
 using Code.Infrastructure.Factory.State;
@@ -5,6 +6,7 @@ using Code.Infrastructure.States;
 using Code.Services.Inputs;
 using Code.Services.PersistentProgress;
 using Code.Services.SaveLoad;
+using Code.Services.StaticData;
 using Code.UI.Services.Factory;
 using UnityEngine;
 using Zenject;
@@ -19,17 +21,19 @@ namespace Code.Infrastructure.Installers
             BindFactories();
             BindStates();
             BindServices();
+            BindModels();
             BindSceneLoader();
         }
-        
+
         private void BindCoroutine() => 
             Container.Bind<ICoroutineRunner>().FromInstance(this).AsSingle();
-        
+
         private void BindFactories()
         {
             Container.Bind<IGameFactory>().To<GameFactory>().AsSingle();
             Container.Bind<IStateFactory>().To<StateFactory>().AsSingle();
             Container.Bind<IUIFactory>().To<UIFactory>().AsSingle();
+            Container.Bind<IStaticDataService>().To<StaticDataService>().AsSingle();
         }
 
         private void BindStates()
@@ -40,7 +44,7 @@ namespace Code.Infrastructure.Installers
             Container.Bind<LoadProgressState>().AsSingle();
             Container.Bind<GameLoopState>().AsSingle();
         }
-        
+
         private void BindServices()
         {
             BindInputService();
@@ -48,7 +52,12 @@ namespace Code.Infrastructure.Installers
             Container.Bind<IPersistentProgressService>().To<PersistentProgressService>().AsSingle();
             Container.Bind<ISaveLoadService>().To<SaveLoadService>().AsSingle();
         }
-        
+
+        private void BindModels()
+        {
+            Container.BindInterfacesAndSelfTo<InventoryModel>().AsSingle();
+        }
+
         private void BindInputService()
         {
             if (Application.isEditor)
@@ -56,7 +65,7 @@ namespace Code.Infrastructure.Installers
             else
                 Container.Bind<IInputService>().To<MobileInputService>().AsSingle();
         }
-        
+
         private void BindSceneLoader() => 
             Container.Bind<SceneLoader>().AsSingle();
     }
