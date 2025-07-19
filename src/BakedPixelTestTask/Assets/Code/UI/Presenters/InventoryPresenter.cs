@@ -3,12 +3,12 @@ using Code.UI.View;
 
 namespace Code.UI.Presenters
 {
-    public class InventoryPresenter
+    public class InventoryPresenter : Presenter<InventoryView>
     {
         private readonly InventoryModel _model;
         private readonly InventoryView _view;
 
-        public InventoryPresenter(InventoryModel model, InventoryView view)
+        public InventoryPresenter(InventoryModel model, InventoryView view) :base(view)
         {
             _model = model;
             _view = view;
@@ -32,7 +32,7 @@ namespace Code.UI.Presenters
             }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _model.InventoryChanged -= UpdateView;
         }
