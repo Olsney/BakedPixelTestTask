@@ -1,6 +1,5 @@
 ﻿using System;
 using Code.StaticData.Item;
-using UnityEngine;
 
 namespace Code.Gameplay.Items
 {
@@ -16,8 +15,6 @@ namespace Code.Gameplay.Items
         {
             Config = config;
             _count = count;
-
-            Changed?.Invoke();
         }
 
         public float TotalWeight => Config.Weight * Count;
@@ -39,8 +36,5 @@ namespace Code.Gameplay.Items
             if (_count < 0)
                 _count = 0;
         }
-
-        public void Set(int amount) =>
-            _count = Mathf.Max(0, amount);
     }
 }

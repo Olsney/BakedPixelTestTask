@@ -64,15 +64,13 @@ namespace Code.Gameplay.Inventory
             return true;
         }
         
-        public bool Unlock()
+        public void Unlock()
         {
             if (!_locked)
-                return false;
+                return;
 
             _locked = false;
             ItemChanged?.Invoke();
-            
-            return true;
         }
         
         private void OnItemChanged() =>
