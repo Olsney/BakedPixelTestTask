@@ -20,5 +20,5 @@ MonoBehaviour:
   Weight: 1
   MaxStack: 1
   Damage: 10
-  AmmoType: 200
+  AmmoType: 100
   Defense: 0

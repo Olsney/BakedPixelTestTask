@@ -115,7 +115,7 @@ namespace Code.UI.Presenters
         {
             foreach (ItemConfig ammo in _ammoConfigs)
             {
-                if (_inventory.TryAddItem(ammo, 30, out var slots))
+                if (_inventory.TryAddItem(ammo, count: 30, out List<int> slots))
                 {
                     foreach (int index in slots)
                         Debug.Log($"Added {ammo.DisplayName} to slot {index}");
@@ -136,7 +136,7 @@ namespace Code.UI.Presenters
             if (all.Count == 0)
                 return;
 
-            ItemConfig item = all[UnityEngine.Random.Range(0, all.Count)];
+            ItemConfig item = all[Random.Range(0, all.Count)];
             if (!_inventory.TryAddItem(item))
             {
                 if (_inventory.HasLockedSlots && _progress.Progress.Coins >= _inventory.UnlockSlotPrice)
@@ -170,7 +170,7 @@ namespace Code.UI.Presenters
                 return;
             }
 
-            int index = occupied[UnityEngine.Random.Range(0, occupied.Count)];
+            int index = occupied[Random.Range(0, occupied.Count)];
             ItemConfig cfg = _inventory.Slots[index].Item.Config;
             _inventory.RemoveItem(index);
             Debug.Log($"Removed {cfg.DisplayName} from slot {index}");
