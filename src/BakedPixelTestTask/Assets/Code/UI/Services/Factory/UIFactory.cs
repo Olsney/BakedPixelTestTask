@@ -1,4 +1,6 @@
-﻿using Code.Gameplay.Inventory;
+﻿using System;
+using System.Collections.Generic;
+using Code.Gameplay.Inventory;
 using Code.Infrastructure.Factory.AssetManagement;
 using Code.Services.PersistentProgress;
 using Code.Services.StaticData;
@@ -9,7 +11,7 @@ using Zenject;
 
 namespace Code.UI.Services.Factory
 {
-    public class UIFactory : IUIFactory
+    public class UIFactory : IUIFactory, IDisposable
     {
         private readonly IInstantiator _instantiator;
         private readonly IAssetProvider _assets;
@@ -19,6 +21,7 @@ namespace Code.UI.Services.Factory
 
 
         private Transform _uiRoot;
+        private List<IDisposable> _presenters = new();
 
         public UIFactory(IInstantiator instantiator,
             IAssetProvider assets,
@@ -44,15 +47,18 @@ namespace Code.UI.Services.Factory
 
         public void CreatePresenters(HudView hudView)
         {
-            CreateInventoryPresenter(hudView);
-            CreateHudPresenter(hudView);
+            _presenters.Add(CreateInventoryPresenter(hudView));
+            _presenters.Add(CreateHudPresenter(hudView));
         }
 
         private InventoryPresenter CreateInventoryPresenter(HudView hudView)
         {
-            _inventoryModel.Initialize();
+            _inventoryModel.LoadProgress(_progress.Progress);
 
-            return new InventoryPresenter(_inventoryModel, hudView.InventoryView);
+            InventoryPresenter inventoryPresenter = new InventoryPresenter(_inventoryModel, hudView.InventoryView, _progress);
+            inventoryPresenter.Initialize();
+
+            return inventoryPresenter;
         }
         
         private HudPresenter CreateHudPresenter(HudView hudView)
@@ -62,6 +68,14 @@ namespace Code.UI.Services.Factory
             hudPresenter.Initialize();
 
             return hudPresenter;
+        }
+
+        public void Dispose()
+        {
+            foreach (IDisposable disposable in _presenters)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

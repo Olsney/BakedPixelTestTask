@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 
 namespace Code.UI.Presenters
 {
-    public class HudPresenter
+    public class HudPresenter : Presenter<HudView>
     {
         private readonly InventoryModel _inventory;
         private readonly IPersistentProgressService _progress;
@@ -29,7 +29,7 @@ namespace Code.UI.Presenters
         public HudPresenter(InventoryModel inventory,
             IPersistentProgressService progress,
             IStaticDataService staticData,
-            HudView view)
+            HudView view) : base(view)
         {
             _inventory = inventory;
             _progress = progress;
@@ -52,7 +52,6 @@ namespace Code.UI.Presenters
                         break;
                 }
             }
-
         }
 
         public void Initialize()
@@ -78,7 +77,7 @@ namespace Code.UI.Presenters
         private void Fire()
         {
             List<int> weaponSlots = new List<int>();
-            
+
             foreach (SlotModel slot in _inventory.Slots)
             {
                 if (!slot.IsLocked && !slot.IsEmpty && slot.Item.Config.Category == ItemCategory.Weapon)
@@ -88,7 +87,7 @@ namespace Code.UI.Presenters
             if (weaponSlots.Count == 0)
             {
                 Debug.LogError("No weapons to fire");
-                
+
                 return;
             }
 
@@ -98,7 +97,7 @@ namespace Code.UI.Presenters
 
             int ammoSlotIndex = -1;
             ItemConfig ammoConfig = null;
-            
+
             for (int i = 0; i < _inventory.Slots.Count; i++)
             {
                 SlotModel slot = _inventory.Slots[i];
@@ -113,13 +112,13 @@ namespace Code.UI.Presenters
             if (ammoSlotIndex == -1)
             {
                 Debug.LogError("No ammo for selected weapon");
-                
+
                 return;
             }
 
             SlotModel ammoSlot = _inventory.Slots[ammoSlotIndex];
             ammoSlot.Item.Remove(1);
-            
+
             if (ammoSlot.Item.Count == 0)
                 ammoSlot.Clear();
 
@@ -150,34 +149,20 @@ namespace Code.UI.Presenters
 
             if (itemsConfigs.Count == 0)
                 return;
-            
+
             string id = _gameBalanceConfig.RandomItemIds[Random.Range(0, _gameBalanceConfig.RandomItemIds.Length)];
             ItemConfig item = _staticData.GetItemConfig(id);
-            
+
             if (item == null)
             {
                 Debug.LogError($"No item config with id {id}");
-                
+
                 return;
             }
             
-            
             if (!_inventory.TryAddItem(item))
             {
-                if (_inventory.HasLockedSlots && _progress.Progress.Coins >= _inventory.UnlockSlotPrice)
-                {
-                    _progress.Progress.Pay(_inventory.UnlockSlotPrice);
-                    _inventory.UnlockNextSlot();
-
-                    if (_inventory.TryAddItem(item))
-                        Debug.Log($"Unlocked slot for {_inventory.UnlockSlotPrice} coins and added {item.DisplayName}");
-                    else
-                        Debug.LogError("Failed to add item after unlocking slot");
-                }
-                else
-                {
-                    Debug.LogError("No free slots to add item");
-                }
+                Debug.LogError("No free slots to add item");
             }
             else
             {
@@ -191,26 +176,26 @@ namespace Code.UI.Presenters
             if (occupied.Count == 0)
             {
                 Debug.LogError("Inventory empty");
-                
+
                 return;
             }
 
             int index = occupied[Random.Range(0, occupied.Count)];
             ItemConfig cfg = _inventory.Slots[index].Item.Config;
-            
+
             _inventory.RemoveItem(index);
-            
+
             Debug.Log($"Removed {cfg.DisplayName} from slot {index}");
         }
 
         private void AddCoins()
         {
             _progress.Progress.AddCoins(_gameBalanceConfig.CoinsPerClick);
-            
+
             Debug.Log($"Coins: {_progress.Progress.Coins}");
         }
-        
-        
+
+
         private void UpdateCoins(int value)
         {
             if (_view.CoinsText != null)
@@ -221,6 +206,12 @@ namespace Code.UI.Presenters
         {
             if (_view.WeightText != null)
                 _view.WeightText.text = _inventory.GetTotalWeight().ToString();
+        }
+
+        public override void Dispose()
+        {
+            _inventory.InventoryChanged -= UpdateWeight;
+            _progress.Progress.CoinsChanged -= UpdateCoins;
         }
     }
 }

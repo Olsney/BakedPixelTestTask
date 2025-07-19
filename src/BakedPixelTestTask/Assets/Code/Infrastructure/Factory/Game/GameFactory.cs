@@ -45,6 +45,9 @@ namespace Code.Infrastructure.Factory.Game
             ProgressWriters.Clear();
         }
 
+        public void CreateAutoSaver() => 
+            _container.InstantiatePrefab(_assets.Load(AssetPath.AutoSaverPath));
+
         private GameObject InstantiateRegistered(string prefabPath)
         {
             GameObject prefab = _assets.Load(path: prefabPath);

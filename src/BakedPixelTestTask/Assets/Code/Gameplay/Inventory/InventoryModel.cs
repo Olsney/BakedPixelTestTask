@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using Code.Data;
 using Code.Gameplay.Items;
+using Code.Services.PersistentProgress;
 using Code.Services.StaticData;
 using Code.StaticData.Item;
 
 namespace Code.Gameplay.Inventory
 {
-    public class InventoryModel
+    public class InventoryModel : ISavedProgress
     {
         private readonly IStaticDataService _staticData;
 
@@ -47,23 +49,76 @@ namespace Code.Gameplay.Inventory
             _staticData = staticData;
         }
 
-        public void Initialize()
+        public void LoadProgress(PlayerProgress progress)
         {
             InventoryConfig inventoryConfig = _staticData.GetInventoryConfig(InventoryId.Player);
 
             _unlockPrice = inventoryConfig.UnlockSlotPrice;
 
+            if (progress.Inventory == null)
+                progress.Inventory = new InventoryProgress();
+            
+            if (progress.Inventory.Slots == null || progress.Inventory.Slots.Length != inventoryConfig.Capacity)
+            {
+                progress.Inventory.Slots = new SlotProgress[inventoryConfig.Capacity];
+
+                for (int i = 0; i < inventoryConfig.Capacity; i++)
+                {
+                    progress.Inventory.Slots[i] = new SlotProgress
+                    {
+                        IsLocked = i >= inventoryConfig.DefaultUnlockedSlots
+                    };
+                }
+            }
+            
             _slots = new List<SlotModel>(inventoryConfig.Capacity);
 
             for (int i = 0; i < inventoryConfig.Capacity; i++)
             {
-                bool locked = i >= inventoryConfig.DefaultUnlockedSlots;
-                var slot = new SlotModel(locked);
+                SlotProgress slotData = progress.Inventory.Slots[i];
+                var slot = new SlotModel(slotData.IsLocked);
+
+                if (!string.IsNullOrEmpty(slotData.ItemId))
+                {
+                    ItemConfig item = _staticData.GetItemConfig(slotData.ItemId);
+                    if (item != null)
+                        slot.SetItem(new ItemModel(item, slotData.Count));
+                }
+
                 slot.ItemChanged += OnSlotChanged;
                 _slots.Add(slot);
             }
 
             InventoryChanged?.Invoke();
+        }
+        
+        public void UpdateProgress(PlayerProgress progress)
+        {
+            if (progress.Inventory == null)
+                progress.Inventory = new InventoryProgress();
+
+            if (progress.Inventory.Slots == null || progress.Inventory.Slots.Length != _slots.Count)
+                progress.Inventory.Slots = new SlotProgress[_slots.Count];
+
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                SlotModel slot = _slots[i];
+                SlotProgress data = progress.Inventory.Slots[i] ?? new SlotProgress();
+                data.IsLocked = slot.IsLocked;
+
+                if (slot.IsEmpty)
+                {
+                    data.ItemId = null;
+                    data.Count = 0;
+                }
+                else
+                {
+                    data.ItemId = slot.Item.Config.Id;
+                    data.Count = slot.Item.Count;
+                }
+
+                progress.Inventory.Slots[i] = data;
+            }
         }
         
         private void OnSlotChanged() =>
