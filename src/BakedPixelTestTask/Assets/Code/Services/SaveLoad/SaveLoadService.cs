@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Code.Data;
+using Code.Gameplay.Inventory;
 using Code.Infrastructure.Factory.Game;
 using Code.Services.PersistentProgress;
 using UnityEngine;
@@ -15,18 +16,24 @@ namespace Code.Services.SaveLoad
         
         private readonly IPersistentProgressService _progressService;
         private readonly IGameFactory _gameFactory;
-        
-        public SaveLoadService(IPersistentProgressService progressService, IGameFactory gameFactory)
+        private readonly InventoryModel _inventoryModel;
+
+        public SaveLoadService(IPersistentProgressService progressService, 
+            IGameFactory gameFactory,
+            InventoryModel inventoryModel)
         {
             _progressService = progressService;
             _gameFactory = gameFactory;
+            _inventoryModel = inventoryModel;
         }
 
         public void SaveProgress()
         {
-            foreach (ISavedProgress progressWriter in _gameFactory.ProgressWriters) 
+            foreach (ISavedProgress progressWriter in _gameFactory.ProgressWriters)
                 progressWriter.UpdateProgress(_progressService.Progress);
          
+            _inventoryModel.UpdateProgress(_progressService.Progress);
+            
             string json = _progressService.Progress.ToJson();
             File.WriteAllText(ProgressFilePath, json);
         }

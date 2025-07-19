@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Serialization;
 
 namespace Code.Data
 {
@@ -6,7 +7,13 @@ namespace Code.Data
     public class PlayerProgress
     {
         public event Action<int> CoinsChanged;
-        
+        public InventoryProgress Inventory;
+
+        public PlayerProgress()
+        {
+            Inventory = new InventoryProgress();
+        }
+
         public int Coins { get; private set; }
         
         public void AddCoins(int amount)
