@@ -55,7 +55,10 @@ namespace Code.UI.Services.Factory
         {
             _inventoryModel.LoadProgress(_progress.Progress);
 
-            return new InventoryPresenter(_inventoryModel, hudView.InventoryView);
+            InventoryPresenter inventoryPresenter = new InventoryPresenter(_inventoryModel, hudView.InventoryView, _progress);
+            inventoryPresenter.Initialize();
+
+            return inventoryPresenter;
         }
         
         private HudPresenter CreateHudPresenter(HudView hudView)

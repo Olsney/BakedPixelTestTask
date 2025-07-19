@@ -9,7 +9,6 @@ namespace Code.Infrastructure
     public class GameBootstrapper : MonoBehaviour, ICoroutineRunner
     {
         private GameStateMachine _gameStateMachine;
-        private ISaveLoadService _saveLoadService;
 
         [Inject]
         private void Construct(GameStateMachine gameStateMachine,
@@ -17,7 +16,6 @@ namespace Code.Infrastructure
             ISaveLoadService saveLoadService)
         {
             _gameStateMachine = gameStateMachine;
-            _saveLoadService = saveLoadService;
         }
         
         private void Start()
