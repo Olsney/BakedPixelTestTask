@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Code.Data;
 using Code.Gameplay.Inventory;
 using Code.Services.PersistentProgress;
 using Code.Services.StaticData;
@@ -19,9 +18,9 @@ namespace Code.UI.Presenters
         private readonly IStaticDataService _staticData;
         private readonly HudView _view;
 
-        private readonly List<ItemConfig> _ammoConfigs = new List<ItemConfig>();
-        private readonly List<ItemConfig> _weaponConfigs = new List<ItemConfig>();
-        private readonly List<ItemConfig> _armorConfigs = new List<ItemConfig>();
+        private readonly List<ItemConfig> _ammoConfigs = new();
+        private readonly List<ItemConfig> _weaponConfigs = new();
+        private readonly List<ItemConfig> _armorConfigs = new();
         private readonly GameBalanceConfig _gameBalanceConfig;
         private readonly Action<int> _coinsChangedHandler;
         private readonly Action _inventoryChangedHandler;
@@ -105,6 +104,7 @@ namespace Code.UI.Presenters
                 {
                     ammoSlotIndex = i;
                     ammoConfig = slot.Item.Config;
+                    
                     break;
                 }
             }
@@ -159,15 +159,11 @@ namespace Code.UI.Presenters
 
                 return;
             }
-            
+
             if (!_inventory.TryAddItem(item))
-            {
                 Debug.LogError("No free slots to add item");
-            }
             else
-            {
                 Debug.Log($"Added {item.DisplayName}");
-            }
         }
 
         private void DeleteItem()

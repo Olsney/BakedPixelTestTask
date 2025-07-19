@@ -14,13 +14,12 @@ namespace Code.Infrastructure.Factory.Game
         private readonly IAssetProvider _assets;
         private readonly IUIFactory _uiFactory;
 
-        public List<ISavedProgress> ProgressWriters { get; } = new List<ISavedProgress>();
+        public List<ISavedProgress> ProgressWriters { get; } = new();
 
-        public List<ISavedProgressReader> ProgressReaders { get; } = new List<ISavedProgressReader>();
+        public List<ISavedProgressReader> ProgressReaders { get; } = new();
 
         public GameFactory(IInstantiator container, 
             IAssetProvider assets,
-            IPersistentProgressService progressService,
             IUIFactory uiFactory)
         {
             _container = container;

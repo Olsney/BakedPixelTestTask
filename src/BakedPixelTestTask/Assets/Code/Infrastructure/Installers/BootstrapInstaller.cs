@@ -3,12 +3,10 @@ using Code.Infrastructure.Factory.AssetManagement;
 using Code.Infrastructure.Factory.Game;
 using Code.Infrastructure.Factory.State;
 using Code.Infrastructure.States;
-using Code.Services.Inputs;
 using Code.Services.PersistentProgress;
 using Code.Services.SaveLoad;
 using Code.Services.StaticData;
 using Code.UI.Services.Factory;
-using UnityEngine;
 using Zenject;
 
 namespace Code.Infrastructure.Installers
@@ -47,7 +45,6 @@ namespace Code.Infrastructure.Installers
 
         private void BindServices()
         {
-            BindInputService();
             Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle();
             Container.Bind<IPersistentProgressService>().To<PersistentProgressService>().AsSingle();
             Container.Bind<ISaveLoadService>().To<SaveLoadService>().AsSingle();
@@ -56,14 +53,6 @@ namespace Code.Infrastructure.Installers
         private void BindModels()
         {
             Container.BindInterfacesAndSelfTo<InventoryModel>().AsSingle();
-        }
-
-        private void BindInputService()
-        {
-            if (Application.isEditor)
-                Container.Bind<IInputService>().To<StandaloneInputService>().AsSingle();
-            else
-                Container.Bind<IInputService>().To<MobileInputService>().AsSingle();
         }
 
         private void BindSceneLoader() => 

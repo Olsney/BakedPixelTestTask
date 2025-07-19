@@ -16,33 +16,12 @@ namespace Code.Gameplay.Inventory
         private int _unlockPrice;
 
 
-        public List<SlotModel> Slots => new List<SlotModel>(_slots);
+        public List<SlotModel> Slots => new(_slots);
         public int Capacity => _slots.Count;
 
         public event Action InventoryChanged;
         
         public int UnlockSlotPrice => _unlockPrice;
-        public int UnlockedSlotsCount
-        {
-            get
-            {
-                int count = 0;
-                foreach (var slot in _slots)
-                    if (!slot.IsLocked)
-                        count++;
-                return count;
-            }
-        }
-        public bool HasLockedSlots
-        {
-            get
-            {
-                foreach (var slot in _slots)
-                    if (slot.IsLocked)
-                        return true;
-                return false;
-            }
-        }
 
         public InventoryModel(IStaticDataService staticData)
         {
@@ -81,11 +60,13 @@ namespace Code.Gameplay.Inventory
                 if (!string.IsNullOrEmpty(slotData.ItemId))
                 {
                     ItemConfig item = _staticData.GetItemConfig(slotData.ItemId);
+                    
                     if (item != null)
                         slot.SetItem(new ItemModel(item, slotData.Count));
                 }
 
                 slot.ItemChanged += OnSlotChanged;
+                
                 _slots.Add(slot);
             }
 
@@ -159,6 +140,7 @@ namespace Code.Gameplay.Inventory
                     if (slot.CanStack(config))
                     {
                         int add = Math.Min(count, config.MaxStack - slot.Item.Count);
+                        
                         slot.TryStack(config, add);
                         count -= add;
                         
@@ -191,49 +173,20 @@ namespace Code.Gameplay.Inventory
             return count == 0;
         }
 
-        public bool RemoveItem(int slotIndex)
+        public void RemoveItem(int slotIndex)
         {
             if (slotIndex < 0 || slotIndex >= _slots.Count)
-                return false;
+                return;
 
             SlotModel slot = _slots[slotIndex];
 
             if (slot.IsEmpty)
-                return false;
+                return;
 
             slot.Clear();
             InventoryChanged?.Invoke();
-
-            return true;
-        }
-
-        public void AddEmptySlots(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                var slot = new SlotModel();
-                slot.ItemChanged += OnSlotChanged;
-                _slots.Add(slot);
-            }
-
-            InventoryChanged?.Invoke();
         }
         
-        public bool UnlockNextSlot()
-        {
-            foreach (var slot in _slots)
-            {
-                if (slot.IsLocked)
-                {
-                    slot.Unlock();
-                    InventoryChanged?.Invoke();
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public List<int> FindAllOccupiedSlotIndexes()
         {
             List<int> result = new List<int>();

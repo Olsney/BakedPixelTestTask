@@ -29,8 +29,8 @@ namespace Code.UI.Presenters
         {
             for (int i = 0; i < _model.Slots.Count; i++)
             {
-                var slotModel = _model.Slots[i];
-                var slotView = _view.GetSlotView(i);
+                SlotModel slotModel = _model.Slots[i];
+                SlotView slotView = _view.GetSlotView(i);
                 slotView.SetLocked(slotModel.IsLocked);
 
                 if (slotModel.IsLocked)
